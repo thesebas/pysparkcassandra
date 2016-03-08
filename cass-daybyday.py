@@ -48,10 +48,10 @@ days = [datetime(2015, 10, d) for d in range(1,11)]
 print days
 
 for day in days:
-    print day
-    data = rdd.select("url", "date", "counts", "cnt") \
-        .where('"date" = ? AND "tags" contains ?', day.strftime("%Y-%m-%d"), "channel:apple") \
-        .map(sumCounts)
+    print day.strftime("%Y-%m-%d")
+    data = rdd.select("url", "date", "counts", "cnt", "tags") \
+        .where('"date" = ? AND tags contains ?', day.strftime("%Y-%m-%d"), "channel:android") \
+        .map(sumCounts) \
+        .saveToCassandra("el_test", "cockpit2_testIndexes")
 
-    sc.parallelize(data.collect()).saveToCassandra("el_test", "cockpit2_testIndexes")
-    #rdd.saveToCassandra()
+    print data

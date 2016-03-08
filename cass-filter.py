@@ -16,7 +16,7 @@ conf.set("spark.cassandra.connection.host", "10.0.40.42")
 sc = CassandraSparkContext(conf = conf)
 atexit.register(lambda: sc.stop())
 
-rdd = sc.cassandraTable("el_test", "cockpit2_testIndexes")
+rdd = sc.cassandraTable("el_test", "cockpit2_testTogether")
 
 
 # for( d in range 2015-10-01 ~ 2015-10-10 ) do:
@@ -36,6 +36,8 @@ def filterDateRage(_from, _to, col):
 
     return inner
 
+def printme(row):
+    print row
 
 def sumCounts(row):
     # {u'ga_videoPlaysForThisPost': 0, u'ga_VideoPlaysThisPost': 0, u'gigya_socialComments': 0, u'fb_socialFacebookComments': 0, u'cp_socialShares': 0, u'tw_socialTwitterShares': 0, u'sda_downloads': 0, u'fb_socialFacebookLikes': 0, u'fb_socialFacebookShares': 0, u'ga_videoPlays': 0, u'ga_videoPlaysInThisPost': 0, u'fb_socialSignalsSum': 0, u'ga_socialGooglePlusShares': 0}
@@ -44,8 +46,6 @@ def sumCounts(row):
     return row
 
 data = rdd.select("url", "date", "counts", "cnt") \
-    .where('"tags" contains ?', "channel:apple") \
-    .filter(filterDateRage("2015-10-01 00:00", "2015-10-10 00:00", "date")) \
-    .map(sumCounts)
+    .where('"date" = ?', '2015-10-01' )
 
-rdd.saveToCassandra(data.collect())
+print data.collect()
